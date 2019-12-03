@@ -23,16 +23,15 @@ env_dbname = os.environ.get("DBNAME")
 
 def lambda_handler(event, context):
 
-    if event['XXX'] == 'INSERT':
+    if event['Records'][0]['messageAttributes']['Action']['stringValue'] == 'INSERT':
         return respond(None, insert())
         
-    elif event['YYY'] == 'SELECT':
+    elif event['Records'][0]['messageAttributes']['Action']['stringValue'] == 'SELECT':
         return respond(None, select())
         
     else:
-        return respond(ValueError('Unsupported method "{}"'.format(event['httpMethod'])))
+        return respond(ValueError('Unsupported event "{}"'.format(event['Records'][0]['messageAttributes']['Action']['stringValue'])))
         
-
 def insert():
     
     try:
