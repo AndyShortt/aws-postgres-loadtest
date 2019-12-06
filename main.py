@@ -13,31 +13,34 @@
 
 import psycopg2
 import os
+import json
 import random
 
-env_dmls = int(os.environ.get("DMLS"))
-env_pass = os.environ.get("PASS")
-env_user = os.environ.get("USER")
-env_host = os.environ.get("HOST")
-env_dbname = os.environ.get("DBNAME")
 
 def lambda_handler(event, context):
+    
+    attr_action = event['Records'][0]['messageAttributes']['Action']['stringValue']
+    attr_dmls = int(event['Records'][0]['messageAttributes']['DMLS']['stringValue'])
+    attr_pass = event['Records'][0]['messageAttributes']['PASS']['stringValue']
+    attr_user = event['Records'][0]['messageAttributes']['USER']['stringValue']
+    attr_host = event['Records'][0]['messageAttributes']['HOST']['stringValue']
+    attr_dbname = event['Records'][0]['messageAttributes']['DBNAME']['stringValue']
 
-    if event['Records'][0]['messageAttributes']['Action']['stringValue'] == 'INSERT':
-        return respond(None, insert())
+    if attr_action == 'INSERT':
+        return respond(None, insert(attr_dmls, attr_dbname, attr_user, attr_pass, attr_host))
         
-    elif event['Records'][0]['messageAttributes']['Action']['stringValue'] == 'SELECT':
-        return respond(None, select())
+    elif attr_action == 'SELECT':
+        return respond(None, select(attr_dmls, attr_dbname, attr_user, attr_pass, attr_host))
         
     else:
-        return respond(ValueError('Unsupported event "{}"'.format(event['Records'][0]['messageAttributes']['Action']['stringValue'])))
+        return respond(ValueError('Unsupported event "{}"'.format(attr_action)))
         
-def insert():
+def insert(dmls, dbname, user, passw, host):
     
     try:
-        conn = psycopg2.connect("dbname=" + env_dbname + ' user=' + env_user +' password=' + env_pass + ' host=' + env_host)
+        conn = psycopg2.connect("dbname=" + dbname + ' user=' + user +' password=' + passw + ' host=' + host)
         cur = conn.cursor()
-        for dml in range(env_dmls):
+        for dml in range(dmls):
             cur.execute("INSERT INTO transactions (type, date, quantity, price) VALUES (%s, %s, %s, %s)",(random.randint(1,10), '2019-01-0' + str(random.randint(1,9)), random.randint(1,1000), round(random.uniform(0,500),2)))
         conn.commit()
         cur.close()
@@ -47,12 +50,12 @@ def insert():
         print (e)
         
 
-def select():
+def select(dmls, dbname, user, passw, host):
     
     try:
-        conn = psycopg2.connect("dbname=" + env_dbname + ' user=' + env_user +' password=' + env_pass + ' host=' + env_host)
+        conn = psycopg2.connect("dbname=" + dbname + ' user=' + user +' password=' + passw + ' host=' + host)
         cur = conn.cursor()
-        for dml in range(env_dmls):
+        for dml in range(dmls):
             cur.execute("SELECT type.name, sum(transactions.quantity) FROM type INNER JOIN transactions on type.id = transactions.type GROUP BY type.name")
         cur.close()
         conn.close()
@@ -62,8 +65,18 @@ def select():
         print ('selects complete')
     except psycopg2.Error as e:
         print (e)
-        
-    
-def timer(button)
 
-    return nothing
+    
+def timer(button):
+
+    return
+    
+    
+def respond(err, res=None):
+    return {
+        'statusCode': '400' if err else '200',
+        'body': err.message if err else json.dumps(res),
+        'headers': {
+            'Content-Type': 'application/json',
+        },
+    }
