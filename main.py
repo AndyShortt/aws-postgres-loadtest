@@ -15,16 +15,17 @@ import psycopg2
 import os
 import json
 import random
+from get_secrets import get_secrets
 
 
 def lambda_handler(event, context):
     
     attr_action = event['Records'][0]['messageAttributes']['Action']['stringValue']
     attr_dmls = int(event['Records'][0]['messageAttributes']['DMLS']['stringValue'])
-    attr_pass = event['Records'][0]['messageAttributes']['PASS']['stringValue']
-    attr_user = event['Records'][0]['messageAttributes']['USER']['stringValue']
-    attr_host = event['Records'][0]['messageAttributes']['HOST']['stringValue']
     attr_dbname = event['Records'][0]['messageAttributes']['DBNAME']['stringValue']
+    attr_pass = get_secrets(attr_dbname)['password']
+    attr_user = get_secrets(attr_dbname)['username']
+    attr_host = event['Records'][0]['messageAttributes']['HOST']['stringValue']
 
     if attr_action == 'INSERT':
         return respond(None, insert(attr_dmls, attr_dbname, attr_user, attr_pass, attr_host))
@@ -80,3 +81,5 @@ def respond(err, res=None):
             'Content-Type': 'application/json',
         },
     }
+
+
