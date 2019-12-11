@@ -16,26 +16,27 @@ import os
 import json
 import random
 import timeit
-from get_secrets import get_secrets
 from test_object import TestConfig
+from result_log import Log
 
 
 def lambda_handler(event, context):
 
-    response, elapsed = evaluate(TestConfig(event))
-    return respond(response,elapsed)
+    test_config = TestConfig(event)
+    response, elapsed = evaluate(test_config)
+    return respond(response,elapsed,test_config)
 
 def evaluate(test_config):
     
     if test_config.action == 'INSERT':
         start_time = timeit.default_timer()
-        response = respond(None, insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host))
+        response = (None, insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host))
         elapsed = timeit.default_timer() - start_time
         return response, elapsed
         
     elif test_config.action == 'SELECT':
         start_time = timeit.default_timer()
-        response = respond(None, select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host))
+        response = (None, select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host))
         elapsed = timeit.default_timer() - start_time
         return response, elapsed
         
@@ -71,17 +72,14 @@ def select(dmls, dbname, user, passw, host):
         print ('selects complete')
     except psycopg2.Error as e:
         print (e)
-
-    
-def timer(press):
-    return
     
     
-def respond(err, res=None):
-    log()
+#def respond(err, res=None, test_config):
+def respond(response, elapsed, test_config):
+    Log(elapsed, test_config.dbname, test_config.action)
     return {
-        'statusCode': '400' if err else '200',
-        'body': err.message if err else json.dumps(res),
+        'statusCode': '400' if response.err else '200',
+        'body': response.err.message if response.err else json.dumps(response.res),
         'headers': {
             'Content-Type': 'application/json',
         },
