@@ -25,16 +25,10 @@ def lambda_handler(event, context):
     test_config = TestConfig(event)
     
     if test_config.action == 'INSERT':
-        start_time = timeit.default_timer()
-        response = insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
-        elapsed = timeit.default_timer() - start_time
-        return respond(response, elapsed, test_config)
+        return insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
         
     elif test_config.action == 'SELECT':
-        start_time = timeit.default_timer()
-        response = select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
-        elapsed = timeit.default_timer() - start_time
-        return respond(response, elapsed, test_config)
+        return select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
         
     else:
         return {
@@ -51,7 +45,10 @@ def insert(dmls, dbname, user, passw, host):
         conn = psycopg2.connect("dbname=" + dbname + ' user=' + user +' password=' + passw + ' host=' + host)
         cur = conn.cursor()
         for dml in range(dmls):
+            start_time = timeit.default_timer()
             cur.execute("INSERT INTO transactions (type, date, quantity, price) VALUES (%s, %s, %s, %s)",(random.randint(1,10), '2019-01-0' + str(random.randint(1,9)), random.randint(1,1000), round(random.uniform(0,500),2)))
+            elapsed = timeit.default_timer() - start_time
+            Log(elapsed, dbname, 'INSERT')
         conn.commit()
         cur.close()
         conn.close()
@@ -65,7 +62,10 @@ def select(dmls, dbname, user, passw, host):
         conn = psycopg2.connect("dbname=" + dbname + ' user=' + user +' password=' + passw + ' host=' + host)
         cur = conn.cursor()
         for dml in range(dmls):
+            start_time = timeit.default_timer()
             cur.execute("SELECT type.name, sum(transactions.quantity) FROM type INNER JOIN transactions on type.id = transactions.type GROUP BY type.name")
+            elapsed = timeit.default_timer() - start_time
+            Log(elapsed, dbname, 'SELECT')
         cur.close()
         conn.close()
         #rows = cur.fetchall()
@@ -76,8 +76,7 @@ def select(dmls, dbname, user, passw, host):
         return (e)
     
     
-def respond(response, elapsed, test_config):
-    Log(elapsed, test_config.dbname, test_config.action)
+def respond(response):
     return {
         'statusCode': '200',
         'body': json.dumps(response),
