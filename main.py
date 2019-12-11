@@ -15,29 +15,35 @@ import psycopg2
 import os
 import json
 import random
+import timeit
 from get_secrets import get_secrets
+from test_object import TestConfig
 
 
 def lambda_handler(event, context):
-    
-    attr_action = event['Records'][0]['messageAttributes']['Action']['stringValue']
-    attr_dmls = int(event['Records'][0]['messageAttributes']['DMLS']['stringValue'])
-    attr_dbname = event['Records'][0]['messageAttributes']['DBNAME']['stringValue']
-    attr_pass = get_secrets(attr_dbname)['password']
-    attr_user = get_secrets(attr_dbname)['username']
-    attr_host = event['Records'][0]['messageAttributes']['HOST']['stringValue']
 
-    if attr_action == 'INSERT':
-        return respond(None, insert(attr_dmls, attr_dbname, attr_user, attr_pass, attr_host))
+    response, elapsed = evaluate(TestConfig(event))
+    return respond(response,elapsed)
+
+def evaluate(test_config):
+    
+    if test_config.action == 'INSERT':
+        start_time = timeit.default_timer()
+        response = respond(None, insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host))
+        elapsed = timeit.default_timer() - start_time
+        return response, elapsed
         
-    elif attr_action == 'SELECT':
-        return respond(None, select(attr_dmls, attr_dbname, attr_user, attr_pass, attr_host))
+    elif test_config.action == 'SELECT':
+        start_time = timeit.default_timer()
+        response = respond(None, select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host))
+        elapsed = timeit.default_timer() - start_time
+        return response, elapsed
         
     else:
-        return respond(ValueError('Unsupported event "{}"'.format(attr_action)))
-        
+        return ValueError('Unsupported event "{}"'.format(test_config.action))
+
+
 def insert(dmls, dbname, user, passw, host):
-    
     try:
         conn = psycopg2.connect("dbname=" + dbname + ' user=' + user +' password=' + passw + ' host=' + host)
         cur = conn.cursor()
@@ -52,7 +58,6 @@ def insert(dmls, dbname, user, passw, host):
         
 
 def select(dmls, dbname, user, passw, host):
-    
     try:
         conn = psycopg2.connect("dbname=" + dbname + ' user=' + user +' password=' + passw + ' host=' + host)
         cur = conn.cursor()
@@ -68,12 +73,12 @@ def select(dmls, dbname, user, passw, host):
         print (e)
 
     
-def timer(button):
-
+def timer(press):
     return
     
     
 def respond(err, res=None):
+    log()
     return {
         'statusCode': '400' if err else '200',
         'body': err.message if err else json.dumps(res),
