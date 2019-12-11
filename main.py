@@ -26,7 +26,7 @@ def lambda_handler(event, context):
     
     if test_config.action == 'INSERT':
         start_time = timeit.default_timer()
-        response = (None, insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host))
+        response = insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
         elapsed = timeit.default_timer() - start_time
         return respond(response, elapsed, test_config)
         
