@@ -23,25 +23,27 @@ from result_log import Log
 def lambda_handler(event, context):
 
     test_config = TestConfig(event)
-    response, elapsed = evaluate(test_config)
-    return respond(response,elapsed,test_config)
-
-def evaluate(test_config):
     
     if test_config.action == 'INSERT':
         start_time = timeit.default_timer()
         response = (None, insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host))
         elapsed = timeit.default_timer() - start_time
-        return response, elapsed
+        return respond(response, elapsed, test_config)
         
     elif test_config.action == 'SELECT':
         start_time = timeit.default_timer()
-        response = (None, select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host))
+        response = select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
         elapsed = timeit.default_timer() - start_time
-        return response, elapsed
+        return respond(response, elapsed, test_config)
         
     else:
-        return ValueError('Unsupported event "{}"'.format(test_config.action))
+        return {
+        'statusCode': '400',
+        'body': 'Unsupported event "{}"'.format(test_config.action),
+        'headers': {
+            'Content-Type': 'application/json',
+            },
+        }
 
 
 def insert(dmls, dbname, user, passw, host):
@@ -53,9 +55,9 @@ def insert(dmls, dbname, user, passw, host):
         conn.commit()
         cur.close()
         conn.close()
-        print ('inserts complete')
+        return ('inserts complete')
     except psycopg2.Error as e:
-        print (e)
+        return (e)
         
 
 def select(dmls, dbname, user, passw, host):
@@ -69,17 +71,16 @@ def select(dmls, dbname, user, passw, host):
         #rows = cur.fetchall()
         #for row in rows:
         #    print (row)
-        print ('selects complete')
+        return ('selects complete')
     except psycopg2.Error as e:
-        print (e)
+        return (e)
     
     
-#def respond(err, res=None, test_config):
 def respond(response, elapsed, test_config):
     Log(elapsed, test_config.dbname, test_config.action)
     return {
-        'statusCode': '400' if response.err else '200',
-        'body': response.err.message if response.err else json.dumps(response.res),
+        'statusCode': '200',
+        'body': json.dumps(response),
         'headers': {
             'Content-Type': 'application/json',
         },
