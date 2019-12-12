@@ -28,8 +28,8 @@ class Log:
                             'Value': action
                         },
                     ],
-                    'Unit': 'None',
-                    'Value': duration
+                    'Unit': 'ms',
+                    'Value': (duration * 1000)
                 },
             ],
             Namespace='PERFORMANCE/AURORA/' + dbname

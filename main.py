@@ -14,6 +14,7 @@
 import psycopg2
 import os
 import json
+import time
 import random
 import timeit
 from test_object import TestConfig
@@ -29,7 +30,10 @@ def lambda_handler(event, context):
         
     elif test_config.action == 'SELECT':
         return select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
-        
+    
+    elif test_config.action == 'SELECT2':
+        return select2(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host) 
+    
     else:
         return {
         'statusCode': '400',
@@ -49,6 +53,7 @@ def insert(dmls, dbname, user, passw, host):
             cur.execute("INSERT INTO transactions (type, date, quantity, price) VALUES (%s, %s, %s, %s)",(random.randint(1,10), '2019-01-0' + str(random.randint(1,9)), random.randint(1,1000), round(random.uniform(0,500),2)))
             elapsed = timeit.default_timer() - start_time
             Log(elapsed, dbname, 'INSERT')
+            time.sleep(random.randint(0,2))
         conn.commit()
         cur.close()
         conn.close()
@@ -66,6 +71,7 @@ def select(dmls, dbname, user, passw, host):
             cur.execute("SELECT type.name, sum(transactions.quantity) FROM type INNER JOIN transactions on type.id = transactions.type GROUP BY type.name")
             elapsed = timeit.default_timer() - start_time
             Log(elapsed, dbname, 'SELECT')
+            time.sleep(random.randint(0,2))
         cur.close()
         conn.close()
         #rows = cur.fetchall()
@@ -74,7 +80,26 @@ def select(dmls, dbname, user, passw, host):
         return ('selects complete')
     except psycopg2.Error as e:
         return (e)
-    
+
+
+def select2(dmls, dbname, user, passw, host):
+    try:
+        conn = psycopg2.connect("dbname=" + dbname + ' user=' + user +' password=' + passw + ' host=' + host)
+        cur = conn.cursor()
+        for dml in range(dmls):
+            start_time = timeit.default_timer()
+            cur.execute("SELECT * FROM transactions WHERE quantity > %s",(random.randint(10,100)))
+            elapsed = timeit.default_timer() - start_time
+            Log(elapsed, dbname, 'SELECT2')
+            time.sleep(random.randint(0,2))
+        cur.close()
+        conn.close()
+        #rows = cur.fetchall()
+        #for row in rows:
+        #    print (row)
+        return ('selects complete')
+    except psycopg2.Error as e:
+        return (e)
     
 def respond(response):
     return {
