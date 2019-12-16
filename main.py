@@ -23,25 +23,26 @@ from result_log import Log
 
 def lambda_handler(event, context):
 
-    test_config = TestConfig(event)
-    
-    if test_config.action == 'INSERT':
-        return insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
+    for record in event['Records']:
+        test_config = TestConfig(record)
         
-    elif test_config.action == 'SELECT':
-        return select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
-    
-    elif test_config.action == 'SELECT2':
-        return select2(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host) 
-    
-    else:
-        return {
-        'statusCode': '400',
-        'body': 'Unsupported event "{}"'.format(test_config.action),
-        'headers': {
-            'Content-Type': 'application/json',
-            },
-        }
+        if test_config.action == 'INSERT':
+            return insert(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
+        
+        elif test_config.action == 'SELECT':
+            return select(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host)
+        
+        elif test_config.action == 'SELECT2':
+            return select2(test_config.dmls, test_config.dbname, test_config.user, test_config.passw, test_config.host) 
+        
+        else:
+            return {
+            'statusCode': '400',
+            'body': 'Unsupported event "{}"'.format(test_config.action),
+            'headers': {
+                'Content-Type': 'application/json',
+                },
+            }
 
 
 def insert(dmls, dbname, user, passw, host):
@@ -52,7 +53,7 @@ def insert(dmls, dbname, user, passw, host):
             start_time = timeit.default_timer()
             cur.execute("INSERT INTO transactions (type, date, quantity, price) VALUES (%s, %s, %s, %s)",(random.randint(1,10), '2019-01-0' + str(random.randint(1,9)), random.randint(1,1000), round(random.uniform(0,500),2)))
             elapsed = timeit.default_timer() - start_time
-            Log(elapsed, dbname, 'INSERT')
+            Log().put_metric('DURATION','ACTION', 'INSERT', 'Milliseconds', elapsed * 1000, dbname)
             time.sleep(random.randint(0,2))
         conn.commit()
         cur.close()
@@ -70,7 +71,7 @@ def select(dmls, dbname, user, passw, host):
             start_time = timeit.default_timer()
             cur.execute("SELECT type.name, sum(transactions.quantity) FROM type INNER JOIN transactions on type.id = transactions.type GROUP BY type.name")
             elapsed = timeit.default_timer() - start_time
-            Log(elapsed, dbname, 'SELECT')
+            Log().put_metric('DURATION','ACTION', 'SELECT', 'Milliseconds', elapsed * 1000, dbname)
             time.sleep(random.randint(0,2))
         cur.close()
         conn.close()
@@ -88,9 +89,9 @@ def select2(dmls, dbname, user, passw, host):
         cur = conn.cursor()
         for dml in range(dmls):
             start_time = timeit.default_timer()
-            cur.execute("SELECT * FROM transactions WHERE quantity > %s",(random.randint(10,100)))
+            cur.execute("SELECT * FROM transactions WHERE quantity > %s",[random.randint(10,100)])
             elapsed = timeit.default_timer() - start_time
-            Log(elapsed, dbname, 'SELECT2')
+            Log().put_metric('DURATION','ACTION', 'SELECT2', 'Milliseconds', elapsed * 1000, dbname)
             time.sleep(random.randint(0,2))
         cur.close()
         conn.close()

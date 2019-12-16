@@ -7,14 +7,14 @@ sqs = boto3.client('sqs')
 queue_url = 'https://sqs.us-east-1.amazonaws.com/313021996969/PostgreTest'
 
 ### ADD OR REDUCE LOAD HERE
-load_wait = 1 # Seconds between batches
-sqs_batch = 10 # size of SQS batch
+load_wait = 3 # Seconds between batches
+sqs_batch = 30 # size of SQS batch
 total_duration = 600 # Total seconds to run test
-dml_batch = 10 # for each sqs msg, how many DMLs to perform
+dml_batch = 70 # for each sqs msg, how many DMLs to perform
 ###
 
 # Define msg
-def call_sqs(action):
+def call_sqs(action, host):
     return sqs.send_message(
         QueueUrl=queue_url,
         DelaySeconds=1,
@@ -29,7 +29,7 @@ def call_sqs(action):
             },
             'HOST': {
                 'DataType': 'String',
-                'StringValue': 'reinvent-test.cluster-cfsiasvduu7p.us-east-1.rds.amazonaws.com'
+                'StringValue': host
             },
             'DBNAME': {
                 'DataType': 'String',
@@ -46,8 +46,16 @@ def call_sqs(action):
 seconds = 0
 while total_duration > seconds:
     for i in range(sqs_batch):
-        print(call_sqs('SELECT'))
-        print(call_sqs('INSERT'))
-        print(call_sqs('SELECT2'))
+        print(call_sqs('SELECT','reinvent-serverless.cluster-cfsiasvduu7p.us-east-1.rds.amazonaws.com'))
+        print(call_sqs('INSERT','reinvent-serverless.cluster-cfsiasvduu7p.us-east-1.rds.amazonaws.com'))
+        print(call_sqs('SELECT2', 'reinvent-serverless.cluster-cfsiasvduu7p.us-east-1.rds.amazonaws.com'))
     time.sleep(load_wait - random.randint(0,1))
     seconds += load_wait
+    
+    #serverless
+    # reinvent-serverless.cluster-cfsiasvduu7p.us-east-1.rds.amazonaws.com
+    
+    #provisioned
+    #reinvent-test.cluster-ro-cfsiasvduu7p.us-east-1.rds.amazonaws.com
+    #reinvent-test.cluster-cfsiasvduu7p.us-east-1.rds.amazonaws.com
+    

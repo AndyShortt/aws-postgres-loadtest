@@ -15,23 +15,35 @@ import json
 import boto3
 
 class Log: 
-    def __init__(self, duration, dbname, action): 
-        cloudwatch = boto3.client('cloudwatch')
+    def __init__(self): 
+        self.cloudwatch = boto3.client('cloudwatch')
     
-        cloudwatch.put_metric_data(
+    def put_metric(self, name, dimension_name, dimension_value, unit, value, namespace):
+        self.cloudwatch.put_metric_data(
             MetricData=[
                 {
-                    'MetricName': 'DURATION',
+                    'MetricName': name,
                     'Dimensions': [
                         {
-                            'Name': 'ACTION',
-                            'Value': action
+                            'Name': dimension_name,
+                            'Value': dimension_value
                         },
                     ],
-                    'Unit': 'ms',
-                    'Value': (duration * 1000)
+                    'Unit': unit,
+                    'Value': value
                 },
+                {
+                    'MetricName': 'COMPLETIONS',
+                    'Dimensions': [
+                        {
+                           'Name':  dimension_name,
+                           'Value':  dimension_value
+                        },  
+                    ],
+                    'Unit': 'Count',
+                    'Value': 1
+                }
             ],
-            Namespace='PERFORMANCE/AURORA/' + dbname
+            Namespace='PERFORMANCE/AURORA/' + namespace
         )
  

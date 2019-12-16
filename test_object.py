@@ -16,10 +16,10 @@ import json
 from get_secrets import get_secrets
 
 class TestConfig: 
-    def __init__(self, event): 
-        self.action = event['Records'][0]['messageAttributes']['Action']['stringValue']
-        self.dmls = int(event['Records'][0]['messageAttributes']['DMLS']['stringValue'])
-        self.dbname = event['Records'][0]['messageAttributes']['DBNAME']['stringValue']
+    def __init__(self, record): 
+        self.action = record['messageAttributes']['Action']['stringValue']
+        self.dmls = int(record['messageAttributes']['DMLS']['stringValue'])
+        self.dbname = record['messageAttributes']['DBNAME']['stringValue']
         self.passw = get_secrets(self.dbname)['password']
         self.user = get_secrets(self.dbname)['username']
-        self.host = event['Records'][0]['messageAttributes']['HOST']['stringValue']
+        self.host = record['messageAttributes']['HOST']['stringValue']
