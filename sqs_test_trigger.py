@@ -4,13 +4,13 @@ import random
 
 # Create SQS client
 sqs = boto3.client('sqs')
-queue_url = 'https://sqs.us-east-1.amazonaws.com/313021996969/PostgreTest'
+queue_url = 'https://sqs.us-east-1.amazonaws.com/313021996969/LambdaLoadTest-MySqsQueue-1UXEKC30XAJT6'
 
 ### ADD OR REDUCE LOAD HERE
-load_wait = 3 # Seconds between batches
-sqs_batch = 30 # size of SQS batch
-total_duration = 600 # Total seconds to run test
-dml_batch = 70 # for each sqs msg, how many DMLs to perform
+load_wait = 0 # Seconds between batches
+sqs_batch = 1 # size of SQS batch
+total_duration = 1 # Total seconds to run test
+dml_batch = 1 # for each sqs msg, how many DMLs to perform
 ###
 
 # Define msg
