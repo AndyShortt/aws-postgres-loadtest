@@ -7,9 +7,9 @@ phases:
     commands:
       - pip install aws-psycopg2
       - export BUCKET=code-repo-ashortt
-      - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file outputtemplate.yml
+      - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file outputtemplate.yaml
 artifacts:
   type: zip
   files:
     - template.yaml
-    - outputtemplate.yml
+    - outputtemplate.yaml
