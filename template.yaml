@@ -7,6 +7,15 @@ Resources:
     Properties:
       Handler: main.lambda_handler
       Runtime: python3.7
+      MemorySize: 1024
+      Timeout: 180
+      Role: arn:aws:iam::313021996969:role/service-role/LambdaRole
+      VpcConfig:
+        SecurityGroupIds: 
+          - sg-25f0125b
+          SubnetIds: 
+          - subnet-fe3999b6
+          - subnet-4227d16e
       Events:
         MySQSEvent:
           Type: SQS
