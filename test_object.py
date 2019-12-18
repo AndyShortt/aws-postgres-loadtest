@@ -13,14 +13,14 @@
 
 import os
 import json
-from get_secrets import get_secrets
+from secrets import Secrets
 
 class TestConfig: 
     def __init__(self, record): 
         self.action = record['messageAttributes']['Action']['stringValue']
         self.dmls = int(record['messageAttributes']['DMLS']['stringValue'])
         self.dbname = record['messageAttributes']['DBNAME']['stringValue']
-        secrets = get_secrets(self.dbname)
-        self.passw = secrets['password']
-        self.user = secrets['username']
+        secrets = Secrets(self.dbname)
+        self.passw = secrets.secret_values['password']
+        self.user = secrets.secret_values['username']
         self.host = record['messageAttributes']['HOST']['stringValue']
