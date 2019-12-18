@@ -13,7 +13,7 @@ Resources:
       VpcConfig:
         SecurityGroupIds: 
           - sg-25f0125b
-          SubnetIds: 
+        SubnetIds: 
           - subnet-fe3999b6
           - subnet-4227d16e
       Events:
