@@ -17,9 +17,10 @@ from get_secrets import get_secrets
 
 class TestConfig: 
     def __init__(self, record): 
-        action = record['messageAttributes']['Action']['stringValue']
-        dmls = int(record['messageAttributes']['DMLS']['stringValue'])
-        dbname = record['messageAttributes']['DBNAME']['stringValue']
-        passw = get_secrets(dbname)['password']
-        user = get_secrets(dbname)['username']
-        host = record['messageAttributes']['HOST']['stringValue']
+        self.action = record['messageAttributes']['Action']['stringValue']
+        self.dmls = int(record['messageAttributes']['DMLS']['stringValue'])
+        self.dbname = record['messageAttributes']['DBNAME']['stringValue']
+        secrets = get_secrets(self.dbname)
+        self.passw = secrets['password']
+        self.user = secrets['username']
+        self.host = record['messageAttributes']['HOST']['stringValue']
