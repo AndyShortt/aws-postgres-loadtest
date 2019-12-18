@@ -18,7 +18,9 @@ Things to note about this implementation:
 - For storing database secrets in Amazon Secrets Manager, that is not handled in this repo. Setup database username and password seperatly.
 - For creation of VPC, security group, and subnets, that is not handled in this repo. Setup those items then update the template.yaml to reflect.
 - DDL setup for the database is not handled in this repo. Here are the table descriptions:
+
 table_name | ordinal_position | column_default | is_nullable | data_type
+
 transactions	1	nextval('transactions_id_seq'::regclass)	NO	integer
 transactions	2	NULL	YES	integer
 transactions	3	NULL	YES	date
