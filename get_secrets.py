@@ -52,4 +52,4 @@ def get_secrets(dbname):
         else:
             decoded_binary_secret = base64.b64decode(get_secret_value_response['SecretBinary'])
             
-        return json.loads(secret)
+    return json.loads(secret)
