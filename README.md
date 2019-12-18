@@ -17,6 +17,15 @@ Things to note about this implementation:
 - For deplotment of the Amazon Aurora database, that is not handled in this repo. Deploy and setup the database seperatly, then provide DBNAME & HOST information in the client-script.
 - For storing database secrets in Amazon Secrets Manager, that is not handled in this repo. Setup database username and password seperatly.
 - For creation of VPC, security group, and subnets, that is not handled in this repo. Setup those items then update the template.yaml to reflect.
+- DDL setup for the database is not handled in this repo. Here are the table descriptions:
+table_name | ordinal_position | column_default | is_nullable | data_type
+transactions	1	nextval('transactions_id_seq'::regclass)	NO	integer
+transactions	2	NULL	YES	integer
+transactions	3	NULL	YES	date
+transactions	4	NULL	YES	integer
+transactions	5	NULL	YES	double precision
+type	1	NULL	YES	integer
+type	2	NULL	YES	text
 
 ## Execution
 
