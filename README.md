@@ -11,11 +11,6 @@ Things to note about this implementation:
 - This is not an industry standard benchmark
 - Lambda does not scale it's SQS polling linerally or in real-time based on queue-depth. This means if you generate a high amount of SQS messages, your load against the database might come in bursts as lambda picks up new messages
 
-## License
-
-See LICENSE file.
-Copyright 2019-2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-SPDX-License-Identifier: MIT-0
 
 ## Deployment
 
