@@ -9,7 +9,7 @@ Resources:
       Runtime: python3.7
       MemorySize: 1024
       Timeout: 180
-      Role: arn:aws:iam::313021996969:role/service-role/LambdaRole
+      Role: !GetAtt LambdaRole.Arn
       VpcConfig:
         SecurityGroupIds: 
           - sg-25f0125b
@@ -24,3 +24,40 @@ Resources:
             BatchSize: 10
   MySqsQueue:
     Type: AWS::SQS::Queue
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Sid: AllowLambdaServiceToAssumeRole
+            Effect: Allow
+            Action: 
+              - 'sts:AssumeRole'
+            Principal:
+              Service: 
+                - lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambdaFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: GetSecrets 
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'secretsmanager:GetResourcePolicy'
+                  - 'secretsmanager:GetSecretValue'
+                  - 'secretsmanager:DescribeSecret'
+                  - 'secretsmanager:ListSecretVersionIds'
+                Resource:
+                  - !Join
+                    - ''
+                    - - 'arn:aws:secretsmanager:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':secret:LambdaLoadTest*'
