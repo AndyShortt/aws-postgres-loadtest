@@ -1,6 +1,6 @@
-## AWS Serverless Load Test for Auora PostgreSQL
+## AWS Serverless Load Test for Aurora PostgreSQL
 
-This basic serverless app applies simulated SELECT and INSERT load against an Amazon Aurora PostgreSQL database.  Successful executions are logged to Amazon Cloudwatch where statement duration can be viewed.
+This basic serverless function applies simulated SELECT and INSERT load against an Amazon Aurora PostgreSQL database.  Successful executions are logged to Amazon Cloudwatch where statement duration can be viewed.
 
 The components of this app are: 
 1. A client-script (sqs_test_trigger.py) that the user executes to begin the test, adjust volume, and change host endpoints
@@ -10,6 +10,8 @@ The components of this app are:
 Things to note about this implementation:
 - This is not an industry standard benchmark
 - Lambda does not scale it's SQS polling linerally or in real-time based on queue-depth. This means if you generate a high amount of SQS messages, your load against the database might come in bursts as lambda picks up new messages
+
+This function was used in preparation for AWS re:Invent 2019 [FSI309](https://www.portal.reinvent.awsevents.com/connect/sessionDetail.ww?SESSION_ID=97951&csrftkn=622O-2731-X53I-IAF6-ALHH-B1IN-02QT-B9X4) - Relational databases: Performance, scale, and availability.
 
 
 ## Deployment
