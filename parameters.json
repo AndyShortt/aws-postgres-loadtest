@@ -1,14 +1,7 @@
-[
-    {
-      "ParameterKey": "SecretName",
-      "ParameterValue": "LambdaLoadTest"
-    }, 
-    {
-      "ParameterKey": "SecurityGroups",
-      "ParameterValue": ["sg-25f0125b"]
-    },
-    {
-        "ParameterKey": "Subnets",
-        "ParameterValue": ["subnet-fe3999b6","subnet-4227d16e"]
-    }
-  ]
+{
+    "Parameters": {
+        "SecretName": "LambdaLoadTest",
+        "SecurityGroups":["sg-25f0125b"],
+        "Subnets":["subnet-fe3999b6","subnet-4227d16e"]
+    } 
+}
