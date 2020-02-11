@@ -17,11 +17,12 @@ This function was used in preparation for AWS re:Invent 2019 [FSI309](https://ww
 ## Deployment
 
 - For deployment of SQS and Lambda components, AWS CodePipeline is used in the way desribed here: https://docs.aws.amazon.com/lambda/latest/dg/build-pipeline.html
-- For deplotment of the Amazon Aurora database, that is not handled in this repo. Deploy and setup the database seperatly, then provide DBNAME & HOST information in the client-script.
-- For storing database secrets in Amazon Secrets Manager, that is not handled in this repo. Setup database username and password seperatly.
-- For creation of VPC, security group, and subnets, that is not handled in this repo. Setup those items then update the template.yaml to reflect.
-- DDL setup for the database is not handled in this repo. Here are the table descriptions:
+- For deployment of the Amazon Aurora database, that is not handled in this repo. Deploy and setup the database seperatly, then provide DBNAME & HOST information in the client-script sqs_test_trigger.py. The database tables/columns required are below.
+- AWS Secrets Manager is used to store your database name and password. Setup a secret for the RDS username and password and update the paramaters.json file with the secret name.
+- VPC is used to protect the database from public access. Place the RDS database into a VPC SecurityGroup(s) and Subnet(s) and update the parameters.json file to reflect which security groups and subnets the lambda function should use. In order to block inbound traffic, remove the internet gateway but create a NAT gateway and s3 VPC endpoint. Update route table accordingly.
 
+
+Database DDL
 | table_name | ordinal_position | column_default | is_nullable | data_type |
 | --- | --- | --- | --- | --- |
 | transactions |	1 |	nextval('transactions_id_seq'::regclass) |	NO |	integer |
