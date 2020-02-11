@@ -7,7 +7,7 @@ phases:
       - pip install psycopg2-binary -t .
   build:
     commands:
-      - export BUCKET=code-repo-ashortt
+      - export BUCKET=YOUR-BUCKET-HERE
       - aws cloudformation package --template-file template.yaml --s3-bucket $BUCKET --output-template-file outputtemplate.yaml
 artifacts:
   type: zip

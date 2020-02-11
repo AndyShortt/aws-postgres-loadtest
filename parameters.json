@@ -1,7 +1,7 @@
 {
     "Parameters": {
         "SecretName": "LambdaLoadTest",
-        "SecurityGroups": "sg-25f0125b",
-        "Subnets":"subnet-fe3999b6,subnet-4227d16e"
+        "SecurityGroups": "sg-YOURS",
+        "Subnets":"subnet-YOURS,subnet-YOURS"
     } 
 }

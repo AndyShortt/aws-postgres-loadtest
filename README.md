@@ -17,6 +17,7 @@ This function was used in preparation for AWS re:Invent 2019 [FSI309](https://ww
 ## Deployment
 
 - For deployment of SQS and Lambda components, AWS CodePipeline is used in the way desribed here: https://docs.aws.amazon.com/lambda/latest/dg/build-pipeline.html
+- You will need an S3 bucket for the cloudformation packaging, update the buildspec.yaml with your bucket name.
 - For deployment of the Amazon Aurora database, that is not handled in this repo. Deploy and setup the database seperatly, then provide DBNAME & HOST information in the client-script sqs_test_trigger.py. The database tables/columns required are below.
 - AWS Secrets Manager is used to store your database name and password. Setup a secret for the RDS username and password and update the paramaters.json file with the secret name.
 - VPC is used to protect the database from public access. Place the RDS database into a VPC SecurityGroup(s) and Subnet(s) and update the parameters.json file to reflect which security groups and subnets the lambda function should use. In order to block inbound traffic, remove the internet gateway but create a NAT gateway and s3 VPC endpoint. Update route table accordingly.
