@@ -8,7 +8,7 @@ from botocore.exceptions import ClientError
 
 class Secrets:
     def __init__(self, dbname): 
-        secret_name = "aurora/" + dbname + "/admin"
+        secret_name = "LambdaLoadTest"
         region_name = "us-east-1"
 
         # Create a Secrets Manager client
