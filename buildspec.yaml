@@ -4,7 +4,7 @@ phases:
     runtime-versions:
       python: 3.7
     commands:
-      - pip install aws-psycopg2 -t .
+      - pip install psycopg2-binary -t .
   build:
     commands:
       - export BUCKET=code-repo-ashortt
