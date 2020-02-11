@@ -1,6 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Example of processing messages on an SQS queue with Lambda
+Parameters:
+  SecurityGroups:
+    Type: 'List<AWS::EC2::SecurityGroup::Id>'
+    Description: The list of SecurityGroupIds in your Virtual Private Cloud (VPC)
+  Subnets:
+    Type: 'List<AWS::EC2::Subnet::Id>'
+    Description: The list of SubnetsIds in your Virtual Private Cloud (VPC)
+  SecretName:
+    Type: 'String'
 Resources:
   LambdaLoadTest:
     Type: AWS::Serverless::Function
@@ -11,11 +20,11 @@ Resources:
       Timeout: 180
       Role: !GetAtt LambdaRole.Arn
       VpcConfig:
-        SecurityGroupIds: 
-          - sg-25f0125b
-        SubnetIds: 
-          - subnet-fe3999b6
-          - subnet-4227d16e
+        SecurityGroupIds: !Ref SecurityGroups
+        SubnetIds: !Ref Subnets
+      Environment: 
+        Variables:
+          SECRET_NAME: !Ref SecretName 
       Events:
         MySQSEvent:
           Type: SQS
