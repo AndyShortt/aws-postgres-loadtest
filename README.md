@@ -1,5 +1,4 @@
 ## AWS Serverless Load Test for Aurora PostgreSQL
-
 This basic serverless function applies simulated SELECT and INSERT load against an Amazon Aurora PostgreSQL database.  Successful executions are logged to Amazon Cloudwatch where statement duration can be viewed.
 
 The components of this app are: 
@@ -14,30 +13,26 @@ Things to note about this implementation:
 
 This function was used in preparation for AWS re:Invent 2019 [FSI309](https://www.portal.reinvent.awsevents.com/connect/sessionDetail.ww?SESSION_ID=97951&csrftkn=622O-2731-X53I-IAF6-ALHH-B1IN-02QT-B9X4) - Relational databases: Performance, scale, and availability.
 
+
+## License Summary
+This sample code is made available under the MIT-0 license. See the LICENSE file.
 Amazon Employees, see ticket V164744705 for open source approval.
 
 
 ## Deployment
-
-1. Several components will need to be completed prior to execution of this app.
+1. Setup S3, VPC, Aurora, and Secrets:
     - Create a S3 bucket to store intermediate build files.
     - Setup the Amazon Aurora database you wish to test. If you want to use the tables in this example, see the table structure below.
     - Setup a VPC with a public and private subnet, S3 private endpoint, and NAT gateway.
     - Setup a Secret in AWS Secretes Manager for the username and password of the Aurora database.
 
-2. Setup a CodePipeline following [this](https://docs.aws.amazon.com/lambda/latest/dg/build-pipeline.html) example.
+2. Setup a CodePipeline following [this](https://docs.aws.amazon.com/lambda/latest/dg/build-pipeline.html) example. Then:
     - Add an environment variable to the Build stage called "BUCKET" with the value as your S3 bucket name created above.
     - Add 3 Parameter overrides in the Deploy stage for "SecretName", "SecurityGroups", and "Subnets". Example syntax:
     {"SecretName": "YourSecret", "SecurityGroups": "sg-yours", "Subnets":"subnet-yours1, subnet-yours2"}
 
-- For deployment of SQS and Lambda components, AWS CodePipeline is used in the way desribed here: https://docs.aws.amazon.com/lambda/latest/dg/build-pipeline.html
-- You will need an S3 bucket for the cloudformation packaging, update the buildspec.yaml with your bucket name.
-- For deployment of the Amazon Aurora database, that is not handled in this repo. Deploy and setup the database seperatly, then provide DBNAME & HOST information in the client-script sqs_test_trigger.py. The database tables/columns required are below.
-- AWS Secrets Manager is used to store your database name and password. Setup a secret for the RDS username and password and update the paramaters.json file with the secret name.
-- VPC is used to protect the database from public access. Place the RDS database into a VPC SecurityGroup(s) and Subnet(s) and update the parameters.json file to reflect which security groups and subnets the lambda function should use. In order to block inbound traffic, remove the internet gateway but create a NAT gateway and s3 VPC endpoint. Update route table accordingly.
 
-
-Database DDL
+Database DDL Setup:
 | table_name | ordinal_position | column_default | is_nullable | data_type |
 | --- | --- | --- | --- | --- |
 | transactions |	1 |	nextval('transactions_id_seq'::regclass) |	NO |	integer |
@@ -48,8 +43,8 @@ Database DDL
 |type |	1 |	NULL |	YES |	integer |  
 |type |	2 |	NULL |	YES |	text |  
 
-## Execution
 
+## Execution
 Open sqs_test_trigger.py in an environment that has boto3 setup with access to the SQS queue URL.
 
 Update the following fields based on your target resources:
@@ -60,13 +55,7 @@ Update the following fields based on your target resources:
 Alter the load variables as desired and then execute the python script to begin the test. Observe performance metrics in your RDS dashboard or put together a custom CloudWatch dashboard that shows SQS queue depth, lambda function executions, RDS metrics, and your custom metrics.
 
 
-## License Summary
-
-This sample code is made available under the MIT-0 license. See the LICENSE file.
-
-
 ## TODO
-
 - Everything in Deployment section under item #1 should be added to this library for automation.
 - CodePipeline setup should be automated.
 - Determine a mechanism that will scale Lambda linerally, in order to more directly control load on the database and not be subject to the batching and concurrency restrictions. This would likely replace SQS.
