@@ -5,9 +5,13 @@ import boto3
 import time
 import random
 
-# Create SQS client
 sqs = boto3.client('sqs')
+
+#### UPDATE TARGETS
 queue_url = 'https://sqs.us-east-1.amazonaws.com/...YOUR-QUEUE...'
+database_url = 'YOUR-RDS-ENDPOINT.us-east-1.rds.amazonaws.com'
+database_name 'YOUR-AURORA-DATABASE-NAME'
+###
 
 ### ADD OR REDUCE LOAD HERE
 load_wait = 0 # Seconds between batches
@@ -36,11 +40,11 @@ def call_sqs(action, host):
             },
             'DBNAME': {
                 'DataType': 'String',
-                'StringValue': 'reinvent'
+                'StringValue': database_name
             }
         },
         MessageBody=(
-            'Test PostgreSQL reinvent database SELECT statment times'
+            'Aurora DML execution request'
         )
     )
 
@@ -49,9 +53,9 @@ def call_sqs(action, host):
 seconds = 0
 while total_duration > seconds:
     for i in range(sqs_batch):
-        print(call_sqs('SELECT','YOUR-RDS-ENDPOINT.us-east-1.rds.amazonaws.com'))
-        print(call_sqs('INSERT','YOUR-RDS-ENDPOINT.us-east-1.rds.amazonaws.com'))
-        print(call_sqs('SELECT2', 'YOUR-RDS-ENDPOINT.us-east-1.rds.amazonaws.com'))
-    time.sleep(load_wait - random.randint(0,1))
-    seconds += load_wait
+        print(call_sqs('SELECT',database_url))
+        print(call_sqs('INSERT',database_url))
+        print(call_sqs('SELECT2', database_url))
+    time.sleep(max(load_wait,1) - random.randint(0,1))
+    seconds += max(load_wait,1)
     

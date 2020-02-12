@@ -13,4 +13,3 @@ artifacts:
   files:
     - template.yaml
     - outputtemplate.yaml
-    - parameters.json
