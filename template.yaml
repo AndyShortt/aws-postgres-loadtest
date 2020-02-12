@@ -69,4 +69,6 @@ Resources:
                       - !Ref 'AWS::Region'
                       - ':'
                       - !Ref 'AWS::AccountId'
-                      - ':secret:LambdaLoadTest*'
+                      - ':secret:'
+                      - !Ref SecretName
+                      - '*'
