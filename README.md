@@ -11,11 +11,11 @@ Things to note about this implementation:
 - This is not an industry standard benchmark
 - Lambda does not scale it's SQS polling linerally or in real-time based on queue-depth. This means if you generate a high amount of SQS messages, your load against the database might come in bursts as lambda picks up new messages
 
-This function was used in preparation for AWS re:Invent 2019 [FSI309](https://www.portal.reinvent.awsevents.com/connect/sessionDetail.ww?SESSION_ID=97951&csrftkn=622O-2731-X53I-IAF6-ALHH-B1IN-02QT-B9X4) - Relational databases: Performance, scale, and availability.
+This app was used in preparation for AWS re:Invent 2019 [FSI309](https://www.portal.reinvent.awsevents.com/connect/sessionDetail.ww?SESSION_ID=97951&csrftkn=622O-2731-X53I-IAF6-ALHH-B1IN-02QT-B9X4) - Relational databases: Performance, scale, and availability.
 
 
 ## License Summary
-This sample code is made available under the MIT-0 license. See the LICENSE file.
+This sample code is made available under the MIT-0 license. See the LICENSE file.  
 Amazon Employees, see ticket V164744705 for open source approval.
 
 
